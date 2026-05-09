@@ -67,7 +67,7 @@ def get_usage_stats(db: Session = Depends(get_db)):
 
 @router.put("/users/{user_id}/role", dependencies=[Depends(admin_required)])
 def update_user_role(user_id: int, role: str, db: Session = Depends(get_db)):
-    if role not in ["user", "moderator", "admin"]:
+    if role not in ["user", "admin"]:
         raise HTTPException(status_code=400, detail="Invalid role")
         
     user = db.query(User).filter(User.id == user_id).first()

@@ -182,7 +182,6 @@ const AdminView = () => {
                           className="bg-[#070707] border border-white/10 rounded-lg px-2 py-1 text-[10px] font-bold uppercase text-white focus:outline-none focus:border-white/30"
                         >
                           <option value="user">User</option>
-                          <option value="moderator">Moderator</option>
                           <option value="admin">Admin</option>
                         </select>
                       </td>
