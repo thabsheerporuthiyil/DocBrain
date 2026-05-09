@@ -6,7 +6,9 @@ import {
   ChevronRight,
   LogOut,
   Settings,
-  ShieldCheck
+  ShieldCheck,
+  Menu,
+  X
 } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -32,6 +34,7 @@ const NAV_ITEMS = [
 ];
 
 function Sidebar({ isCollapsed, setIsCollapsed }) {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const [username, setUsername] = useState(null);
@@ -57,11 +60,32 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
   };
 
   return (
-    <aside 
-      className={`fixed left-0 top-0 z-50 flex h-full flex-col border-r border-white/8 bg-[#070707] transition-all duration-300 ease-in-out ${
-        isCollapsed ? "w-20" : "w-64"
-      }`}
-    >
+    <>
+      {/* Mobile Menu Button */}
+      <div className="fixed top-4 left-4 z-[60] lg:hidden">
+        <button 
+          onClick={() => setIsMobileOpen(!isMobileOpen)}
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-md border border-white/10"
+        >
+          {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
+
+      {/* Backdrop for Mobile */}
+      {isMobileOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      <aside 
+        className={`fixed left-0 top-0 z-50 flex h-full flex-col border-r border-white/8 bg-[#070707] transition-all duration-300 ease-in-out 
+          ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          ${isCollapsed ? "lg:w-20" : "lg:w-64"}
+          w-64
+        `}
+      >
       {/* Logo Section */}
       <div className="flex h-20 items-center px-6">
         <div className="flex items-center gap-3">
@@ -86,6 +110,7 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
             <Link
               key={item.id}
               to={item.path}
+              onClick={() => setIsMobileOpen(false)}
               className={`flex items-center gap-3 rounded-2xl px-3 py-3 transition-all duration-200 ${
                 isActive 
                   ? "bg-white/10 text-white shadow-[0_0_20px_rgba(255,255,255,0.05)]" 
@@ -93,11 +118,9 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
               }`}
             >
               <Icon size={20} className={isActive ? "text-white" : "text-inherit"} />
-              {!isCollapsed && (
-                <span className="text-sm font-medium">{item.label}</span>
-              )}
-              {isActive && !isCollapsed && (
-                <div className="ml-auto h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_10px_#fff]" />
+              <span className={`text-sm font-medium ${isCollapsed ? "lg:hidden" : "block"}`}>{item.label}</span>
+              {isActive && (
+                <div className={`ml-auto h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_10px_#fff] ${isCollapsed ? "lg:hidden" : "block"}`} />
               )}
             </Link>
           );
@@ -108,7 +131,7 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
       <div className="border-t border-white/8 p-3 space-y-2">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-zinc-500 transition-all hover:bg-white/5 hover:text-zinc-300"
+          className="hidden lg:flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-zinc-500 transition-all hover:bg-white/5 hover:text-zinc-300"
         >
           {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
           {!isCollapsed && <span className="text-sm font-medium">Collapse</span>}
@@ -136,6 +159,7 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
         </div>
       </div>
     </aside>
+    </>
   );
 }
 

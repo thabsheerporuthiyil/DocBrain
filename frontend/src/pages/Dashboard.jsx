@@ -16,8 +16,8 @@ function Dashboard() {
       {/* Main Content Area */}
       <main 
         className={`flex-1 transition-all duration-300 ease-in-out ${
-          isSidebarCollapsed ? "ml-20" : "ml-64"
-        }`}
+          isSidebarCollapsed ? "lg:ml-20" : "lg:ml-64"
+        } ml-0`}
       >
         <div className="mx-auto max-w-7xl px-6 py-10 lg:px-12 lg:py-16">
           {/* This is where OverviewView, DocumentsView, or ActivityView will render */}
