@@ -11,6 +11,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import OverviewView from "./views/OverviewView";
 import DocumentsView from "./views/DocumentsView";
 import ActivityView from "./views/ActivityView";
+import AdminView from "./views/AdminView";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route index element={<OverviewView />} />
             <Route path="documents" element={<DocumentsView />} />
             <Route path="activity" element={<ActivityView />} />
+            <Route path="admin" element={<AdminView />} />
             <Route path="chat/:documentId" element={<Chat />} />
           </Route>
         </Route>

@@ -5,7 +5,8 @@ import {
   ChevronLeft, 
   ChevronRight,
   LogOut,
-  Settings
+  Settings,
+  ShieldCheck
 } from "lucide-react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -27,15 +28,26 @@ const NAV_ITEMS = [
   { id: "overview", label: "Overview", icon: LayoutDashboard, path: "/dashboard" },
   { id: "documents", label: "Documents", icon: FileText, path: "/dashboard/documents" },
   { id: "activity", label: "Activity", icon: Activity, path: "/dashboard/activity" },
+  { id: "admin", label: "Admin", icon: ShieldCheck, path: "/dashboard/admin", adminOnly: true },
 ];
 
 function Sidebar({ isCollapsed, setIsCollapsed }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [username, setUsername] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    setUsername(getUsernameFromStorage());
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        setUsername(payload.username);
+        setIsAdmin(payload.is_admin || false);
+      } catch (err) {
+        console.error("Token decoding failed", err);
+      }
+    }
   }, []);
 
   const handleLogout = () => {
@@ -65,6 +77,8 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
       {/* Navigation */}
       <nav className="flex-1 space-y-2 px-3 py-6">
         {NAV_ITEMS.map((item) => {
+          if (item.adminOnly && !isAdmin) return null;
+          
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
           
