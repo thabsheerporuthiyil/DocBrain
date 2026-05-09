@@ -198,6 +198,7 @@ def stream_groq(query: str, system_message: str, chat_history: list, user_id: in
 
             response.raise_for_status()
             response_time = time.time() - start_time
+            logged_usage = False
 
             for line in response.iter_lines():
                 if not line:
@@ -211,8 +212,8 @@ def stream_groq(query: str, system_message: str, chat_history: list, user_id: in
 
                     chunk = json.loads(data)
                     
-                    # Handle usage data in stream
-                    if user_id and "usage" in chunk and chunk["usage"]:
+                    # Log usage only ONCE per stream
+                    if user_id and not logged_usage and "usage" in chunk and chunk["usage"]:
                         usage = chunk["usage"]
                         log_llm_usage(
                             user_id=user_id,
@@ -221,8 +222,9 @@ def stream_groq(query: str, system_message: str, chat_history: list, user_id: in
                             completion_tokens=usage.get("completion_tokens", 0),
                             response_time=response_time
                         )
+                        logged_usage = True
 
-                    if not chunk["choices"]:
+                    if not chunk.get("choices"):
                         continue
                         
                     delta = chunk["choices"][0]["delta"].get("content")
