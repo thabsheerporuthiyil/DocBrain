@@ -1,8 +1,10 @@
 import os
 import json
 import httpx
+import time
 from dotenv import load_dotenv
 from app.services.vector_service import get_document_chunks, search_chunks
+from app.utils.logging import log_llm_usage
 
 load_dotenv()
 
@@ -126,9 +128,11 @@ def build_messages(query: str, system_message: str, chat_history: list):
     return messages
 
 
-def call_groq(query: str, system_message: str, chat_history: list) -> str:
+def call_groq(query: str, system_message: str, chat_history: list, user_id: int = None) -> str:
     try:
         messages = build_messages(query, system_message, chat_history)
+        
+        start_time = time.time()
         response = httpx.post(
             "https://api.groq.com/openai/v1/chat/completions",
             headers={
@@ -142,9 +146,23 @@ def call_groq(query: str, system_message: str, chat_history: list) -> str:
             },
             timeout=30,
         )
+        response_time = time.time() - start_time
 
         response.raise_for_status()
-        return response.json()["choices"][0]["message"]["content"]
+        res_json = response.json()
+        
+        # Log usage if user_id is provided
+        if user_id and "usage" in res_json:
+            usage = res_json["usage"]
+            log_llm_usage(
+                user_id=user_id,
+                model="llama-3.3-70b-versatile",
+                prompt_tokens=usage.get("prompt_tokens", 0),
+                completion_tokens=usage.get("completion_tokens", 0),
+                response_time=response_time
+            )
+
+        return res_json["choices"][0]["message"]["content"]
 
     except httpx.TimeoutException:
         raise Exception("Groq API timeout. Please try again.")
@@ -156,9 +174,11 @@ def call_groq(query: str, system_message: str, chat_history: list) -> str:
         raise Exception(f"Groq request failed: {str(e)}")
 
 
-def stream_groq(query: str, system_message: str, chat_history: list):
+def stream_groq(query: str, system_message: str, chat_history: list, user_id: int = None):
     try:
         messages = build_messages(query, system_message, chat_history)
+        start_time = time.time()
+        
         with httpx.stream(
             "POST",
             "https://api.groq.com/openai/v1/chat/completions",
@@ -171,11 +191,13 @@ def stream_groq(query: str, system_message: str, chat_history: list):
                 "messages": messages,
                 "temperature": 0.1,
                 "stream": True,
+                "stream_options": {"include_usage": True}
             },
             timeout=60,
         ) as response:
 
             response.raise_for_status()
+            response_time = time.time() - start_time
 
             for line in response.iter_lines():
                 if not line:
@@ -188,6 +210,21 @@ def stream_groq(query: str, system_message: str, chat_history: list):
                         break
 
                     chunk = json.loads(data)
+                    
+                    # Handle usage data in stream
+                    if user_id and "usage" in chunk and chunk["usage"]:
+                        usage = chunk["usage"]
+                        log_llm_usage(
+                            user_id=user_id,
+                            model="llama-3.3-70b-versatile",
+                            prompt_tokens=usage.get("prompt_tokens", 0),
+                            completion_tokens=usage.get("completion_tokens", 0),
+                            response_time=response_time
+                        )
+
+                    if not chunk["choices"]:
+                        continue
+                        
                     delta = chunk["choices"][0]["delta"].get("content")
 
                     if delta:
@@ -220,7 +257,9 @@ def ask_question(query: str, user_id: str, document_id: str, chat_history: list 
         }
 
     q, system_message = build_prompt(query, docs)
-    answer = call_groq(q, system_message, chat_history)
+    # Convert user_id string to int for logging
+    uid = int(user_id) if user_id and user_id.isdigit() else None
+    answer = call_groq(q, system_message, chat_history, user_id=uid)
 
     return {
         "answer": answer,
@@ -251,8 +290,10 @@ def stream_answer_events(query: str, user_id: str, document_id: str, chat_histor
         return
 
     q, system_message = build_prompt(query, docs)
+    # Convert user_id string to int for logging
+    uid = int(user_id) if user_id and user_id.isdigit() else None
 
-    for token in stream_groq(q, system_message, chat_history):
+    for token in stream_groq(q, system_message, chat_history, user_id=uid):
         yield {
             "type": "delta",
             "content": token,

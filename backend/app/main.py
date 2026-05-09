@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.api import chat, upload, documents, auth, admin
 from app.db.database import Base, engine
-from app.models import user, document, chat_message
+from app.models import user, document, chat_message, llm_log
 from fastapi.middleware.cors import CORSMiddleware
 
 Base.metadata.create_all(bind=engine)
