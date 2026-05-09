@@ -57,7 +57,11 @@ def login(
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
     token = create_access_token(
-        data={"sub": str(user.id), "username": user.username}
+        data={
+            "sub": str(user.id), 
+            "username": user.username,
+            "is_admin": user.is_admin
+        }
     )
 
     return {
