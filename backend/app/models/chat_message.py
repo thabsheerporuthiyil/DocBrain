@@ -11,7 +11,7 @@ class ChatMessage(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     document_id = Column(
-        Integer, ForeignKey("documents.id"), nullable=False, index=True
+        Integer, ForeignKey("documents.id", ondelete="CASCADE"), nullable=False, index=True
     )
     role = Column(String, nullable=False)
     content = Column(Text, nullable=False)

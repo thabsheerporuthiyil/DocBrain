@@ -8,6 +8,7 @@ from app.db.database import get_db
 from app.core.dependencies import get_current_user
 from app.models.user import User
 from app.models.document import Document
+from app.models.chat_message import ChatMessage
 from app.services.vector_service import delete_document_vectors
 from app.services.storage_service import storage_service
 
@@ -95,6 +96,9 @@ def delete_document(
     elif document.file_path and os.path.exists(document.file_path):
         os.remove(document.file_path)
 
+    # Delete associated chat messages first
+    db.query(ChatMessage).filter(ChatMessage.document_id == document_id).delete()
+    
     vectors_deleted = delete_document_vectors(
         user_id=str(current_user.id),
         document_id=str(document.id)
