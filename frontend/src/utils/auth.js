@@ -23,6 +23,17 @@ export const getUsername = () => {
   }
 };
 
+export const isAdmin = () => {
+  const token = getToken();
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.is_admin === true;
+  } catch {
+    return false;
+  }
+};
+
 export const clearAuth = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("username");

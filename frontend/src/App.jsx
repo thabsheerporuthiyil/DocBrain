@@ -6,6 +6,8 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
+
 
 // Views
 import OverviewView from "./views/OverviewView";
@@ -25,8 +27,14 @@ function App() {
             <Route index element={<OverviewView />} />
             <Route path="documents" element={<DocumentsView />} />
             <Route path="activity" element={<ActivityView />} />
-            <Route path="admin" element={<AdminView />} />
+            
+            {/* Admin Only Routes */}
+            <Route element={<AdminProtectedRoute />}>
+              <Route path="admin" element={<AdminView />} />
+            </Route>
+
             <Route path="chat/:documentId" element={<Chat />} />
+
           </Route>
         </Route>
       </Routes>
