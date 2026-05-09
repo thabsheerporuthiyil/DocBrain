@@ -1,5 +1,9 @@
 FROM python:3.11-slim
 
+# Set environment variables for Hugging Face
+ENV PYTHONUNBUFFERED=1
+ENV PORT=7860
+
 WORKDIR /app
 
 # Install system dependencies
@@ -15,9 +19,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code
 COPY . .
 
-# Standard port for Northflank / Cloud services
-ENV PORT=8080
-EXPOSE 8080
+# Hugging Face expects the app to run on port 7860
+EXPOSE 7860
 
 # Run the application
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
