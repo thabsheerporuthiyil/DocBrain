@@ -58,7 +58,7 @@ async def upload_pdf(
         # Create document entry first to get ID
         new_document = Document(
             filename=filename,
-            file_path="pending", # Will update after GCS upload
+            file_path="pending", # Will update after Supabase upload
             user_id=current_user.id,
             file_hash=file_hash,
             status="processing"
@@ -67,23 +67,23 @@ async def upload_pdf(
         db.commit()
         db.refresh(new_document)
 
-        # Upload to GCS: storage/user_id/doc_id_filename.pdf
-        gcs_blob_name = f"uploads/user_{current_user.id}/{new_document.id}_{filename}"
+        # Upload to Supabase: storage/user_id/doc_id_filename.pdf
+        storage_path = f"uploads/user_{current_user.id}/{new_document.id}_{filename}"
         
-        upload_success = storage_service.upload_file(content, gcs_blob_name)
+        upload_success = storage_service.upload_file(content, storage_path)
         
         if not upload_success:
             db.delete(new_document)
             db.commit()
             raise HTTPException(status_code=500, detail="Failed to upload file to cloud storage")
 
-        new_document.file_path = gcs_blob_name
+        new_document.file_path = storage_path
         db.commit()
 
         background_tasks.add_task(
             index_document,
             new_document.id,
-            gcs_blob_name,
+            storage_path,
             filename,
             current_user.id
         )
@@ -96,4 +96,4 @@ async def upload_pdf(
         }
     finally:
         if os.path.exists(temp_path):
-            os.remove(temp_path)
+            os.remove(temp_path)

@@ -29,7 +29,7 @@ async def index_document(document_id: int, file_path: str, filename: str, user_i
             with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
                 content = storage_service.download_file(file_path)
                 if not content:
-                    raise Exception("Failed to download file from Google Cloud Storage")
+                    raise Exception("Failed to download file from Supabase Storage")
                 tmp.write(content)
                 temp_local_path = tmp.name
             processing_path = temp_local_path

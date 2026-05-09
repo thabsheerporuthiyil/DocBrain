@@ -1,74 +1,75 @@
 import os
 import logging
-from google.cloud import storage
-from google.api_core import exceptions
+from typing import Optional
+from supabase import create_client, Client
 from dotenv import load_dotenv
 
 load_dotenv()
 
 logger = logging.getLogger("uvicorn.error")
 
-# GCS Configuration
-BUCKET_NAME = os.getenv("GCP_BUCKET_NAME")
-# For local dev, we might not have GCS credentials, so we can fallback or mock
-# In Cloud Run, credentials are automatically picked up from the service account
+# Supabase Configuration
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+BUCKET_NAME = os.getenv("SUPABASE_BUCKET_NAME", "documents")
 
-class CloudStorageService:
+class SupabaseStorageService:
     def __init__(self):
+        self.client: Optional[Client] = None
+        if SUPABASE_URL and SUPABASE_KEY:
+            try:
+                self.client = create_client(SUPABASE_URL, SUPABASE_KEY)
+                logger.info("Supabase Storage client initialized.")
+            except Exception as e:
+                logger.error(f"Failed to initialize Supabase client: {e}")
+        else:
+            logger.warning("Supabase credentials missing. Storage service will not function.")
+
+    def upload_file(self, file_content: bytes, destination_blob_name: str) -> bool:
+        """Uploads a file to the Supabase bucket."""
+        if not self.client:
+            logger.error("Supabase client not initialized.")
+            return False
+
         try:
-            self.client = storage.Client()
-            self.bucket = self.client.bucket(BUCKET_NAME) if BUCKET_NAME else None
+            # Supabase upload method: storage.from_('bucket').upload('path', 'bytes')
+            response = self.client.storage.from_(BUCKET_NAME).upload(
+                path=destination_blob_name,
+                file=file_content,
+                file_options={"content-type": "application/pdf", "upsert": "true"}
+            )
+            logger.info(f"File {destination_blob_name} uploaded to Supabase bucket '{BUCKET_NAME}'.")
+            return True
         except Exception as e:
-            logger.warning(f"GCS Client initialization failed: {e}. Falling back to local storage if needed.")
-            self.client = None
-            self.bucket = None
-
-    def upload_file(self, file_content: bytes, destination_blob_name: str):
-        """Uploads a file to the bucket."""
-        if not self.bucket:
-            logger.error("GCS Bucket not configured. Upload failed.")
+            logger.error(f"Failed to upload {destination_blob_name} to Supabase: {e}")
             return False
 
-        try:
-            blob = self.bucket.blob(destination_blob_name)
-            blob.upload_from_string(file_content, content_type='application/pdf')
-            logger.info(f"File {destination_blob_name} uploaded to {BUCKET_NAME}.")
-            return True
-        except exceptions.GoogleCloudError as e:
-            logger.error(f"Failed to upload {destination_blob_name} to GCS: {e}")
-            return False
-
-    def download_file(self, blob_name: str) -> bytes:
+    def download_file(self, blob_name: str) -> Optional[bytes]:
         """Downloads a file from the bucket as bytes."""
-        if not self.bucket:
-            logger.error("GCS Bucket not configured. Download failed.")
+        if not self.client:
+            logger.error("Supabase client not initialized.")
             return None
 
         try:
-            blob = self.bucket.blob(blob_name)
-            content = blob.download_as_bytes()
+            content = self.client.storage.from_(BUCKET_NAME).download(blob_name)
             return content
-        except exceptions.GoogleCloudError as e:
-            logger.error(f"Failed to download {blob_name} from GCS: {e}")
+        except Exception as e:
+            logger.error(f"Failed to download {blob_name} from Supabase: {e}")
             return None
 
-    def delete_file(self, blob_name: str):
+    def delete_file(self, blob_name: str) -> bool:
         """Deletes a file from the bucket."""
-        if not self.bucket:
-            logger.error("GCS Bucket not configured. Delete failed.")
+        if not self.client:
+            logger.error("Supabase client not initialized.")
             return False
 
         try:
-            blob = self.bucket.blob(blob_name)
-            blob.delete()
-            logger.info(f"File {blob_name} deleted from {BUCKET_NAME}.")
+            self.client.storage.from_(BUCKET_NAME).remove([blob_name])
+            logger.info(f"File {blob_name} deleted from Supabase bucket '{BUCKET_NAME}'.")
             return True
-        except exceptions.NotFound:
-            logger.warning(f"File {blob_name} not found in {BUCKET_NAME}.")
-            return True
-        except exceptions.GoogleCloudError as e:
-            logger.error(f"Failed to delete {blob_name} from GCS: {e}")
+        except Exception as e:
+            logger.error(f"Failed to delete {blob_name} from Supabase: {e}")
             return False
 
 # Singleton instance
-storage_service = CloudStorageService()
+storage_service = SupabaseStorageService()
