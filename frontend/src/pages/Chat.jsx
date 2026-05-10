@@ -334,8 +334,8 @@ function Chat() {
 
   return (
     <div className="text-white h-full">
-      <main className="mx-auto flex h-[calc(100vh-140px)] lg:h-[calc(100vh-120px)] w-full max-w-[1680px]">
-        <section className="flex w-full flex-1 min-h-0 overflow-hidden lg:rounded-[30px] border-y lg:border border-white/10 bg-[#0b0b0b] shadow-[0_30px_120px_rgba(0,0,0,0.55)]">
+      <main className="flex h-screen w-full">
+        <section className="flex w-full flex-1 min-h-0 overflow-hidden lg:border-l border-white/10 bg-[#0b0b0b]">
           <div
             className={`${isPreviewOpen ? "hidden lg:flex" : "flex"} min-w-0 flex-1 flex-col ${isPreviewOpen ? "lg:border-r lg:border-white/8" : ""
               }`}
