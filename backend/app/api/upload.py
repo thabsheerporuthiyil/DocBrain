@@ -67,8 +67,9 @@ async def upload_pdf(
         db.commit()
         db.refresh(new_document)
 
-        # Upload to Supabase: storage/user_id/doc_id_filename.pdf
-        storage_path = f"uploads/user_{current_user.id}/{new_document.id}_{filename}"
+        # Sanitize filename: replace spaces with underscores and remove special characters
+        safe_filename = "".join([c if c.isalnum() or c in "._-" else "_" for c in filename])
+        storage_path = f"uploads/user_{current_user.id}/{new_document.id}_{safe_filename}"
         
         upload_success = storage_service.upload_file(content, storage_path)
         
