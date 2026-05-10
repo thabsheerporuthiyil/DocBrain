@@ -109,15 +109,6 @@ function OverviewView() {
             </p>
           </div>
           
-          <div className="flex shrink-0 items-center gap-3">
-             <div className="rounded-2xl border border-white/5 bg-white/5 px-4 py-3 backdrop-blur-md">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Status</p>
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]" />
-                  <span className="text-xs font-bold text-white uppercase tracking-tighter">Pro Member</span>
-                </div>
-             </div>
-          </div>
         </div>
       </section>
 
