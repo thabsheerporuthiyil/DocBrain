@@ -54,9 +54,11 @@ def get_document_file(
 
     # Check if it's GCS path
     if document.file_path.startswith("uploads/"):
+        print(f"DEBUG: Attempting to download {document.file_path} from bucket {storage_service.client.storage.from_('documents') if storage_service.client else 'None'}")
         content = storage_service.download_file(document.file_path)
         if not content:
-            raise HTTPException(status_code=404, detail="File not found in cloud storage")
+            print(f"ERROR: File download failed for path: {document.file_path}")
+            raise HTTPException(status_code=404, detail=f"File not found in cloud storage: {document.file_path}")
         
         return StreamingResponse(
             io.BytesIO(content),
