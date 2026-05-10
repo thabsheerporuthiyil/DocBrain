@@ -311,11 +311,11 @@ function Chat() {
     return (
       <article
         key={message.id}
-        className={`flex gap-4 rounded-[26px] px-4 py-4 sm:px-5 ${isUser ? "bg-white/[0.03]" : ""
+        className={`flex gap-3 sm:gap-4 rounded-[20px] sm:rounded-[26px] px-3 py-3 sm:px-5 sm:py-4 ${isUser ? "bg-white/[0.03]" : ""
           }`}
       >
         <div
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold uppercase tracking-[0.18em] ${isUser
+          className={`flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.18em] ${isUser
             ? "bg-white/10 text-zinc-200"
             : "bg-emerald-500/10 text-emerald-300"
             }`}
@@ -324,64 +324,50 @@ function Chat() {
         </div>
 
         <div className="min-w-0 flex-1 pt-1">
-          <p className="whitespace-pre-wrap text-sm leading-7 text-zinc-100">
+          <p className="whitespace-pre-wrap text-[13px] sm:text-sm leading-6 sm:leading-7 text-zinc-100">
             {message.content}
           </p>
-
-          {/* {!isUser &&
-            Array.isArray(message.sources) &&
-            message.sources.length > 0 ? (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {message.sources.map((source, index) => (
-                <span
-                  key={`${message.id}-${index}`}
-                  className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] text-zinc-300"
-                >
-                  Chunk {Number(source.chunk_index) + 1}
-                </span>
-              ))}
-            </div>
-          ) : null} */}
         </div>
       </article>
     );
   };
 
   return (
-    <div className="text-white">
-
-      <main className="mx-auto flex h-[calc(100vh-120px)] w-full max-w-[1680px]">
-        <section className="flex w-full flex-1 min-h-0 overflow-hidden rounded-[30px] border border-white/10 bg-[#0b0b0b] shadow-[0_30px_120px_rgba(0,0,0,0.55)]">
+    <div className="text-white h-full">
+      <main className="mx-auto flex h-[calc(100vh-140px)] lg:h-[calc(100vh-120px)] w-full max-w-[1680px]">
+        <section className="flex w-full flex-1 min-h-0 overflow-hidden lg:rounded-[30px] border-y lg:border border-white/10 bg-[#0b0b0b] shadow-[0_30px_120px_rgba(0,0,0,0.55)]">
           <div
             className={`${isPreviewOpen ? "hidden lg:flex" : "flex"} min-w-0 flex-1 flex-col ${isPreviewOpen ? "lg:border-r lg:border-white/8" : ""
               }`}
           >
+            {/* Header */}
             <div className="border-b border-white/8 bg-[#0d0d0d] px-4 py-3 sm:px-6">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex min-w-0 items-center gap-3">
+                <div className="flex min-w-0 items-center gap-2 sm:gap-3">
                   <Link
                     to="/dashboard"
-                    className="inline-flex shrink-0 items-center gap-2 text-sm text-zinc-400 transition hover:text-white"
+                    className="inline-flex shrink-0 items-center justify-center h-9 w-9 lg:w-auto lg:px-0 lg:gap-2 text-sm text-zinc-400 transition hover:text-white rounded-xl lg:rounded-none bg-white/5 lg:bg-transparent"
+                    title="Back to dashboard"
                   >
-                    <ArrowLeft size={15} />
-                    Back to dashboard
+                    <ArrowLeft size={16} />
+                    <span className="hidden lg:inline">Back to dashboard</span>
                   </Link>
 
-                  <div className="h-5 w-px shrink-0 bg-white/10" />
+                  <div className="hidden sm:block h-5 w-px shrink-0 bg-white/10" />
 
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
+                  <div className="hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
                     <MessageSquareText size={15} />
                   </div>
 
-                  <h1 className="truncate text-base font-semibold text-white sm:text-lg">
-                    {activeDocument?.filename ?? "Document Chat"}
+                  <h1 className="truncate text-sm font-semibold text-white sm:text-base lg:text-lg">
+                    {activeDocument?.filename ?? "Chat"}
                   </h1>
                 </div>
 
-                <div className="flex shrink-0 items-center gap-3 whitespace-nowrap">
+                <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                   {activeDocument ? (
                     <span
-                      className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] ${activeDocument.status === "indexed"
+                      className={`shrink-0 rounded-full border px-2.5 py-1 sm:px-4 sm:py-2 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.15em] sm:tracking-[0.22em] ${activeDocument.status === "indexed"
                         ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300"
                         : activeDocument.status === "processing"
                           ? "border-amber-500/20 bg-amber-500/10 text-amber-300"
@@ -394,38 +380,37 @@ function Chat() {
 
                   <button
                     type="button"
-                    id="clear-chat-btn"
                     onClick={handleClearChat}
                     disabled={isSending || isClearingChat}
+                    className="inline-flex h-8 w-8 sm:h-9 sm:w-auto sm:px-4 shrink-0 items-center justify-center gap-2 rounded-full border border-rose-500/20 bg-rose-500/10 text-rose-300 transition hover:bg-rose-500/20 disabled:opacity-40"
                     title="Clear chat history"
-                    className="inline-flex shrink-0 items-center gap-2 rounded-full border border-rose-500/20 bg-rose-500/10 px-4 py-2 text-sm text-rose-300 transition hover:border-rose-500/40 hover:bg-rose-500/20 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {isClearingChat ? (
                       <LoaderCircle size={15} className="animate-spin" />
                     ) : (
                       <Trash2 size={15} />
                     )}
-                    Clear chat
+                    <span className="hidden sm:inline text-xs font-bold">Clear</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setIsPreviewOpen((current) => !current)}
-                    className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-200 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+                    className="inline-flex h-8 w-8 sm:h-9 sm:w-auto sm:px-4 shrink-0 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 text-zinc-200 transition hover:bg-white/10"
+                    title={isPreviewOpen ? "Show Chat" : "Show PDF"}
                   >
                     {isPreviewOpen ? <EyeOff size={15} /> : <Eye size={15} />}
-                    {isPreviewOpen
-                      ? isDesktopPreview
-                        ? "Hide PDF"
-                        : "Back to chat"
-                      : "Show PDF"}
+                    <span className="hidden sm:inline text-xs font-bold">
+                      {isPreviewOpen ? "Hide PDF" : "PDF"}
+                    </span>
                   </button>
                 </div>
               </div>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto bg-[#0a0a0a]">
-              <div className="mx-auto flex w-full max-w-4xl flex-col gap-2 px-3 py-6 sm:px-6">
+            {/* Messages Area */}
+            <div className="min-h-0 flex-1 overflow-y-auto bg-[#0a0a0a] scroll-smooth">
+              <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-3 py-6 sm:px-6">
                 {isLoadingDocument ? (
                   <div className="flex min-h-[36vh] items-center justify-center">
                     <LoaderCircle size={24} className="animate-spin text-zinc-400" />
@@ -440,43 +425,31 @@ function Chat() {
                   </p>
                 ) : null}
 
-                <div ref={messagesEndRef} className="h-40 shrink-0" />
+                <div ref={messagesEndRef} className="h-32 shrink-0" />
               </div>
             </div>
 
-            <div className="border-t border-white/8 bg-[linear-gradient(180deg,rgba(11,11,11,0)_0%,#0b0b0b_20%)] px-3 pb-4 pt-3 sm:px-6 lg:sticky lg:bottom-0">
-              <div className="mx-auto w-full max-w-4xl rounded-[28px] border border-white/10 bg-[#121212] p-2.5 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
-                <form onSubmit={handleSubmit} className="flex items-end gap-2">
+            {/* Input Area */}
+            <div className="border-t border-white/8 bg-[#0b0b0b] px-3 pb-4 pt-3 sm:px-6">
+              <div className="mx-auto w-full max-w-4xl rounded-[24px] sm:rounded-[28px] border border-white/10 bg-[#121212] p-1.5 sm:p-2 shadow-xl">
+                <form onSubmit={handleSubmit} className="flex items-end gap-1.5 sm:gap-2">
                   <textarea
                     ref={textareaRef}
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     rows={1}
-                    disabled={
-                      isSending ||
-                      !activeDocument ||
-                      activeDocument.status !== "indexed"
-                    }
-                    placeholder={
-                      activeDocument?.status === "indexed"
-                        ? "Ask a question about this PDF..."
-                        : "This document must finish indexing before chat is available."
-                    }
-                    className="flex-1 max-h-[220px] min-h-14 resize-none overflow-y-auto rounded-[22px] border border-white/8 bg-[#0b0b0b] px-4 py-4 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-white/20 focus:bg-[#101010] disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={isSending || !activeDocument || activeDocument.status !== "indexed"}
+                    placeholder={activeDocument?.status === "indexed" ? "Ask something..." : "Indexing..."}
+                    className="flex-1 max-h-[160px] sm:max-h-[220px] min-h-[48px] sm:min-h-[56px] resize-none overflow-y-auto rounded-[18px] sm:rounded-[22px] border border-white/8 bg-[#0b0b0b] px-3 py-3 sm:px-4 sm:py-4 text-xs sm:text-sm text-white outline-none placeholder:text-zinc-500 focus:border-white/20 transition-all"
                   />
 
                   <button
                     type="submit"
-                    disabled={
-                      isSending ||
-                      !query.trim() ||
-                      !activeDocument ||
-                      activeDocument.status !== "indexed"
-                    }
-                    className="mb-1 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={isSending || !query.trim() || !activeDocument || activeDocument.status !== "indexed"}
+                    className="mb-1 inline-flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-full bg-white text-black transition hover:bg-zinc-200 disabled:opacity-40"
                   >
                     {isSending ? (
-                      <LoaderCircle size={18} className="animate-spin" />
+                      <LoaderCircle size={16} className="animate-spin" />
                     ) : (
                       <SendHorizonal size={18} />
                     )}
@@ -486,67 +459,57 @@ function Chat() {
             </div>
           </div>
 
+          {/* PDF Preview Sidebar */}
           {isPreviewOpen ? (
             <aside className="flex h-full min-h-0 w-full flex-1 flex-col bg-[#0f0f0f] lg:w-[min(40vw,560px)] lg:flex-none lg:shrink-0">
-              <div className="flex items-start justify-between gap-4 border-b border-white/8 px-5 py-4">
+              <div className="flex items-center justify-between gap-4 border-b border-white/8 px-4 py-3 sm:px-5 sm:py-4">
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">
                     PDF Panel
                   </p>
-                  <h2 className="mt-1 truncate text-base font-semibold text-white">
-                    {activeDocument?.filename ?? "Document preview"}
+                  <h2 className="mt-0.5 truncate text-sm font-semibold text-white">
+                    {activeDocument?.filename ?? "Preview"}
                   </h2>
                 </div>
 
-                {previewUrl ? (
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={previewUrl}
-                      download={activeDocument?.filename ?? "document.pdf"}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-200 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
-                    >
-                      <FileDown size={15} />
-                      Download
-                    </a>
-                    <a
-                      href={previewUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-200 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
-                    >
-                      <ExternalLink size={15} />
-                      Open
-                    </a>
-                  </div>
-                ) : null}
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  {previewUrl && (
+                    <>
+                      <a
+                        href={previewUrl}
+                        download={activeDocument?.filename ?? "document.pdf"}
+                        className="inline-flex h-8 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 text-[10px] sm:text-xs font-bold text-zinc-200 hover:bg-white/10"
+                      >
+                        <FileDown size={14} />
+                        <span className="hidden sm:inline">Save</span>
+                      </a>
+                      <button
+                        onClick={() => setIsPreviewOpen(false)}
+                        className="lg:hidden inline-flex h-8 items-center gap-2 rounded-full bg-white text-black px-3 text-[10px] font-bold"
+                      >
+                        Chat
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
 
-              <div className="flex-1 bg-[#111111] p-4">
-                <div className="flex h-full flex-col overflow-hidden rounded-[24px] bg-[#181818]">
-                  <div className="flex items-center justify-between px-4 py-3 text-xs text-zinc-500">
-                    <span className="uppercase tracking-[0.2em]">Preview</span>
-                    <span>Reference pane</span>
-                  </div>
-
-                  <div className="min-h-0 flex-1 overflow-hidden bg-[#1f1f1f]">
+              <div className="flex-1 bg-[#111111] p-3 sm:p-4 overflow-hidden">
+                <div className="flex h-full flex-col overflow-hidden rounded-[20px] sm:rounded-[24px] bg-[#181818]">
+                  <div className="min-h-0 flex-1 bg-[#1f1f1f]">
                     {isPreviewLoading ? (
-                      <div className="flex h-full min-h-[36vh] items-center justify-center">
-                        <LoaderCircle
-                          size={26}
-                          className="animate-spin text-zinc-400"
-                        />
+                      <div className="flex h-full items-center justify-center">
+                        <LoaderCircle size={26} className="animate-spin text-zinc-400" />
                       </div>
                     ) : previewError ? (
-                      <div className="flex h-full min-h-[36vh] items-center justify-center p-6">
-                        <p className="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-center text-sm text-rose-300">
-                          {previewError}
-                        </p>
+                      <div className="flex h-full items-center justify-center p-6 text-center">
+                        <p className="text-sm text-rose-400">{previewError}</p>
                       </div>
                     ) : (
                       <iframe
-                        title={activeDocument?.filename ?? "PDF Preview"}
+                        title="PDF Preview"
                         src={previewUrl}
-                        className="h-full w-full bg-white"
+                        className="h-full w-full bg-white border-none"
                       />
                     )}
                   </div>
@@ -556,59 +519,39 @@ function Chat() {
           ) : null}
         </section>
       </main>
-      {/* ── Clear-chat confirmation modal ── */}
+
+      {/* Confirmation Modal */}
       {showClearConfirm && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ backdropFilter: "blur(6px)", backgroundColor: "rgba(0,0,0,0.6)" }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
           onClick={() => setShowClearConfirm(false)}
         >
           <div
-            className="w-full max-w-sm rounded-[28px] border border-white/10 bg-[#131313] p-6 shadow-[0_32px_80px_rgba(0,0,0,0.7)]"
-            style={{ animation: "modalIn 0.18s cubic-bezier(.22,.68,0,1.2) both" }}
+            className="w-full max-w-sm rounded-[28px] border border-white/10 bg-[#131313] p-6 shadow-2xl animate-in fade-in zoom-in duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Icon */}
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-rose-500/20 bg-rose-500/10">
-              <Trash2 size={22} className="text-rose-400" />
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400">
+              <Trash2 size={22} />
             </div>
-
-            <h2 className="text-center text-base font-semibold text-white">
-              Clear chat history?
-            </h2>
-            <p className="mt-2 text-center text-sm leading-6 text-zinc-400">
-              All messages in this conversation will be permanently deleted.
-              This action cannot be undone.
-            </p>
-
+            <h2 className="text-center font-bold text-white">Clear history?</h2>
+            <p className="mt-2 text-center text-xs text-zinc-400">All messages will be lost forever.</p>
             <div className="mt-6 flex gap-3">
               <button
-                type="button"
-                id="clear-confirm-cancel"
                 onClick={() => setShowClearConfirm(false)}
-                className="flex-1 rounded-2xl border border-white/10 bg-white/5 py-2.5 text-sm font-medium text-zinc-300 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+                className="flex-1 rounded-2xl border border-white/10 py-2.5 text-xs font-bold hover:bg-white/5"
               >
                 Cancel
               </button>
               <button
-                type="button"
-                id="clear-confirm-ok"
                 onClick={confirmClearChat}
-                className="flex-1 rounded-2xl bg-rose-600 py-2.5 text-sm font-medium text-white transition hover:bg-rose-500"
+                className="flex-1 rounded-2xl bg-rose-600 py-2.5 text-xs font-bold text-white"
               >
-                Yes, clear
+                Clear
               </button>
             </div>
           </div>
         </div>
       )}
-
-      <style>{`
-        @keyframes modalIn {
-          from { opacity: 0; transform: scale(0.94) translateY(8px); }
-          to   { opacity: 1; transform: scale(1)   translateY(0); }
-        }
-      `}</style>
     </div>
   );
 }
