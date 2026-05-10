@@ -164,7 +164,7 @@ function DocumentsView() {
           <div className="rounded-3xl border border-white/8 bg-[#070707] p-6 sticky top-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10">
-                <Upload size={18} />
+                <Upload size={18}  color="white"/>
               </div>
               <h2 className="font-semibold text-white">Upload PDF</h2>
             </div>
