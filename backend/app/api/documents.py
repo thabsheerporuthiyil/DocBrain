@@ -3,6 +3,7 @@ import io
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from app.db.database import get_db
 from app.core.dependencies import get_current_user
@@ -54,7 +55,7 @@ def get_document_file(
 
     # Check if it's GCS path
     if document.file_path.startswith("uploads/"):
-        print(f"DEBUG: Attempting to download {document.file_path} from bucket {storage_service.client.storage.from_('documents') if storage_service.client else 'None'}")
+        print(f"DEBUG: Attempting to download {document.file_path} from Supabase")
         content = storage_service.download_file(document.file_path)
         if not content:
             print(f"ERROR: File download failed for path: {document.file_path}")
