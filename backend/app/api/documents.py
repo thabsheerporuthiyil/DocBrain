@@ -61,20 +61,24 @@ def get_document_file(
             print(f"ERROR: File download failed for path: {document.file_path}")
             raise HTTPException(status_code=404, detail=f"File not found in cloud storage: {document.file_path}")
         
+        # Sanitize filename for HTTP headers (remove non-latin-1 characters like special dashes)
+        safe_header_filename = document.filename.encode('ascii', 'ignore').decode('ascii')
+        
         return StreamingResponse(
             io.BytesIO(content),
             media_type="application/pdf",
-            headers={"Content-Disposition": f"inline; filename={document.filename}"}
+            headers={"Content-Disposition": f"inline; filename=\"{safe_header_filename}\""}
         )
     
     # Fallback to local
     if not document.file_path or not os.path.exists(document.file_path):
         raise HTTPException(status_code=404, detail="File not found")
 
+    safe_header_filename = document.filename.encode('ascii', 'ignore').decode('ascii')
     return FileResponse(
         path=document.file_path,
         media_type="application/pdf",
-        filename=document.filename
+        filename=safe_header_filename
     )
 
 
