@@ -19,7 +19,7 @@ function Dashboard() {
       {/* Main Content Area */}
       <main 
         className={`flex-1 transition-all duration-300 ease-in-out ${
-          isSidebarCollapsed ? "lg:ml-20" : "lg:ml-64"
+          isSidebarCollapsed ? "lg:ml-28" : "lg:ml-[300px]"
         } ml-0 ${isChatRoute ? "h-screen overflow-hidden" : ""}`}
       >
         <div className={`${
